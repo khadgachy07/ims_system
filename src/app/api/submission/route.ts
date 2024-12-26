@@ -31,7 +31,7 @@ export async function GET(req: NextRequest){
             });
             return NextResponse.json(submissions, { status: 200 });
     }
-    catch (error) {
+    catch  {
         return NextResponse.json("Error getting submission", { status: 500 });
     }
 } 

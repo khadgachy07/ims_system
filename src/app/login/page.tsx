@@ -1,9 +1,15 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 export default function LoginForm() {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Clear error message on component mount
+    setError(null);
+    localStorage.clear();
+  }, []);
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>): void {
     const { name, value } = event.target;
@@ -35,7 +41,7 @@ export default function LoginForm() {
       const data = await response.json();
       const {token} = data
       localStorage.setItem("authToken", token);
-      window.location.href = "/dashboard"; // Example redirection
+      window.location.href = "/idea"; // Example redirection
       
     } catch (error) {
       setError((error as Error).message);

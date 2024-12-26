@@ -13,7 +13,7 @@ export default function SignUpForm() {
 
   const [error, setError] = React.useState("");
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prevState) => ({
       ...prevState,
@@ -21,7 +21,7 @@ export default function SignUpForm() {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const data = {
       name: formData.name,

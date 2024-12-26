@@ -87,7 +87,7 @@ export async function GET(req: NextRequest) {
     let user;
     try {
       user = JSON.parse(userHeader);
-    } catch (error) {
+    } catch {
       return new NextResponse("Unauthorized: Invalid user header: ", {
         status: 401,
       });
