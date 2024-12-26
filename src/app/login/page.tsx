@@ -37,8 +37,8 @@ export default function LoginForm() {
       localStorage.setItem("authToken", token);
       window.location.href = "/dashboard"; // Example redirection
       
-    } catch (err) {
-      setError(err.message);
+    } catch (error) {
+      setError((error as Error).message);
     }
   }
   return (
