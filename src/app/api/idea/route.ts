@@ -65,10 +65,13 @@ export async function POST(req: NextRequest) {
     submission.submittedBy = foundUser;
     await submissionRepository.save(submission);
 
-    return new NextResponse(JSON.stringify({
-      message: "Idea created successfully",
-      idea: idea,
-    }), { status: 201 });
+    return new NextResponse(
+      JSON.stringify({
+        message: "Idea created successfully",
+        idea: idea,
+      }),
+      { status: 201 }
+    );
   } catch (error) {
     console.error("Error in POST /api/ideas:", error);
     return new NextResponse("Internal Server Error", { status: 500 });
@@ -107,7 +110,8 @@ export async function GET(req: NextRequest) {
     const ideas = await ideaRepository.find({
       order: {
         votes: "DESC",
-      }
+      },
+      relations: ["submittedBy"],
     });
 
     return new NextResponse(JSON.stringify(ideas), { status: 200 });

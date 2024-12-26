@@ -2,6 +2,7 @@
 
 import { Role, Status } from "@/entity/enum";
 import { Idea } from "@/entity/ideas";
+import { User } from "@/entity/users";
 import { redirect } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
@@ -45,7 +46,7 @@ export default function Ideas() {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
         });
         if (!roleResponse.ok) throw new Error("Failed to fetch user role");
@@ -57,7 +58,7 @@ export default function Ideas() {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
         });
         if (!ideasResponse.ok) throw new Error("Failed to fetch ideas");
@@ -74,7 +75,35 @@ export default function Ideas() {
     fetchUserRoleAndIdeas();
   }, []);
 
-  const handleAction = async (id: number, action: string, body?: { status: Status }) => {
+  const handleIncentive = async (user: User) => {
+    console.log(user);
+    const token = getAuthToken();
+    if (!token) {
+      alert("Authorization token is missing.");
+      return;
+    }
+    try {
+      const response = await fetch(`/api/incentive`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ userId: user.id }),
+      });
+      if (!response.ok) throw new Error("Failed to give incentive");
+      const data = await response.text();
+      setFeedback(data);
+    } catch (err) {
+      console.error("Failed to give incentive.", err);
+    }
+  };
+
+  const handleAction = async (
+    id: number,
+    action: string,
+    body?: { status: Status }
+  ) => {
     const token = getAuthToken();
     if (!token) {
       alert("Authorization token is missing.");
@@ -86,7 +115,7 @@ export default function Ideas() {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: body ? JSON.stringify(body) : null,
       });
@@ -94,10 +123,12 @@ export default function Ideas() {
       if (!response.ok) {
         const errorDetails = await response.text();
         setFeedback(`Failed to ${action}: ${errorDetails}`);
-        closeModal()
-        return
+        closeModal();
+        return;
       }
-      setFeedback(`${action.charAt(0).toUpperCase() + action.slice(1)} successful!`);
+      setFeedback(
+        `${action.charAt(0).toUpperCase() + action.slice(1)} successful!`
+      );
       setSelectedIdea(null);
       window.location.reload();
     } catch (err) {
@@ -123,17 +154,15 @@ export default function Ideas() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-
-            title: newIdeaTitle,
-            description: newIdeaDescription,
-      
+          title: newIdeaTitle,
+          description: newIdeaDescription,
         }),
       });
 
-      if (!response.ok) throw new Error(`${response.text()}`);      
+      if (!response.ok) throw new Error(`${response.text()}`);
       // setIdeas((prevIdeas) => [...prevIdeas, newIdea]);
       setFeedback("Idea created successfully!");
       setCreateIdeaModalOpen(false);
@@ -154,18 +183,20 @@ export default function Ideas() {
     setSelectedIdea(null);
     setCreateIdeaModalOpen(false);
   };
-  const filteredIdeas = ideas
-  ?.filter((idea) => {
-    if (userRole === Role.SYSTEM_ADMIN) {
-      return idea.status === Status.APPROVED || idea.status === Status.REJECTED;
-    }
-    return idea.status === Status.PENDING;
-  }) ?? [];
+  const filteredIdeas =
+    ideas?.filter((idea) => {
+      if (userRole === Role.SYSTEM_ADMIN) {
+        return (
+          idea.status === Status.APPROVED || idea.status === Status.REJECTED
+        );
+      }
+      return idea.status === Status.PENDING;
+    }) ?? [];
 
   return (
     <div className="flex min-h-screen items-center justify-center px-6 py-12">
       <div className="w-full max-w-3xl bg-teal-500 rounded-lg shadow-lg p-6 bg-opacity-25">
-      <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-teal-500 text-center mb-6">
             Idea Dashboard
           </h1>
@@ -191,15 +222,19 @@ export default function Ideas() {
               onClick={() => openModal(idea)}
               className="border border-teal-500 rounded-lg p-4 bg-teal-900 cursor-pointer hover:bg-teal-600"
             >
-              <h3 className="text-xl font-semibold text-teal-300">{idea.title}</h3>
+              <h3 className="text-xl font-semibold text-teal-300">
+                {idea.title}
+              </h3>
               <p className="text-md text-gray-300">Votes: {idea.votes}</p>
               {idea.status && (
                 <p
                   className={`mt-3 font-semibold ${
-                    idea.status === Status.APPROVED ? "text-green-500" : "text-red-500"
+                    idea.status === Status.APPROVED
+                      ? "text-green-500"
+                      : "text-red-500"
                   }`}
                 >
-                  Status: {idea.status}
+                  Status: {idea.status.toUpperCase()}
                 </p>
               )}
             </div>
@@ -215,10 +250,22 @@ export default function Ideas() {
           aria-describedby="modal-description"
         >
           <div className="bg-teal-800 rounded-lg shadow-lg p-6 w-full max-w-md">
-            <h2 id="modal-title" className="text-2xl font-bold text-teal-300 mb-4">
+            <h2
+              id="modal-title"
+              className="text-2xl font-bold text-teal-300 mb-4"
+            >
               {selectedIdea.title}
             </h2>
-            <p id="modal-description" className="text-md text-gray-300 mb-6">Votes: {selectedIdea.votes}</p>
+            <p id="modal-submittedBy" className="text-md text-gray-300 mb-6">
+              SubmittedBy: {selectedIdea?.submittedBy?.name || "Unknown"}
+            </p>
+            <p id="modal-votes" className="text-md text-gray-300 mb-6">
+              Votes: {selectedIdea.votes}
+            </p>
+            <p id="modal-description" className="text-md text-gray-300 mb-6">
+              {selectedIdea.description}
+            </p>
+
             {userRole === Role.EMPLOYEE && (
               <button
                 onClick={() => handleAction(selectedIdea.id, "vote")}
@@ -227,16 +274,32 @@ export default function Ideas() {
                 Vote
               </button>
             )}
+            {userRole === Role.SYSTEM_ADMIN && selectedIdea?.submittedBy && (
+              <button
+                onClick={() => handleIncentive(selectedIdea.submittedBy)}
+                className="w-full bg-green-500 hover:bg-green-400 text-white py-2 px-4 rounded mb-4"
+              >
+                Give Incentive
+              </button>
+            )}
             {userRole === Role.INNOVATION_MANAGER && (
               <div className="flex space-x-4">
                 <button
-                  onClick={() => handleAction(selectedIdea.id, "review", { status: Status.APPROVED })}
+                  onClick={() =>
+                    handleAction(selectedIdea.id, "review", {
+                      status: Status.APPROVED,
+                    })
+                  }
                   className="w-1/2 bg-green-500 hover:bg-green-400 text-white py-2 px-4 rounded"
                 >
                   Approve
                 </button>
                 <button
-                  onClick={() => handleAction(selectedIdea.id, "review", { status: Status.REJECTED })}
+                  onClick={() =>
+                    handleAction(selectedIdea.id, "review", {
+                      status: Status.REJECTED,
+                    })
+                  }
                   className="w-1/2 bg-red-500 hover:bg-red-400 text-white py-2 px-4 rounded"
                 >
                   Reject
@@ -252,10 +315,12 @@ export default function Ideas() {
           </div>
         </div>
       )}
-       {createIdeaModalOpen && (
+      {createIdeaModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-teal bg-opacity-50 z-50">
           <div className="bg-teal-800 rounded-lg shadow-lg p-6 w-full max-w-md">
-            <h2 className="text-2xl font-bold text-teal-300 mb-4">Create New Idea</h2>
+            <h2 className="text-2xl font-bold text-teal-300 mb-4">
+              Create New Idea
+            </h2>
             <input
               type="text"
               value={newIdeaTitle}

@@ -35,12 +35,11 @@ export const config = {
     "/api/idea/:id/review",
     "/api/idea",
     "/api/submission",
+    "/api/submission/:id",
+    "/api/incentive",
     "/api/user",
     "/api/user/:id",
     "/api/profile",
     "/api/test",  
   ],
-  exclude: [
-    "/api/login"  // Exclude the status update endpoint
-  ]
 };

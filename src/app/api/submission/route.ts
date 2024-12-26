@@ -1,5 +1,4 @@
 import { AppDataSource, initializeDatabase } from "@/db/data-source";
-import { Role } from "@/entity/enum";
 import { Submission } from "@/entity/submission";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -12,10 +11,6 @@ export async function GET(req: NextRequest){
               });
             }
         
-            const user = JSON.parse(userHeader);
-            if (user.role !== Role.SYSTEM_ADMIN) {
-              return new NextResponse("Forbidden: Insufficient role", { status: 403 });
-            }
         
             // Initialize database connection
             if (!AppDataSource.isInitialized) {
