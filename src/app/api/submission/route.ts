@@ -21,8 +21,10 @@ export async function GET(req: NextRequest){
             const submissions = await submissionRepository.find({
               where : {
                 offlineStatus: true,
-                syncStatus: true
-              }
+                syncStatus: true,
+              },
+              relations: ["idea", "submittedBy"],
+              
             });
             return NextResponse.json(submissions, { status: 200 });
     }

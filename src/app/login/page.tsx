@@ -41,7 +41,7 @@ export default function LoginForm() {
       const data = await response.json();
       const {token} = data
       localStorage.setItem("authToken", token);
-      window.location.href = "/idea"; // Example redirection
+      window.location.href = "/dashboard/idea"; // Example redirection
       
     } catch (error) {
       setError((error as Error).message);

@@ -52,7 +52,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: number
 
 
         const userRepository = AppDataSource.getRepository(User);
-        const userDetails = await userRepository.findOne({ where : { id: param.id, role: Role.EMPLOYEE } });
+        const userDetails = await userRepository.findOne({ where : { id: param.id} });
         if (!userDetails) {
             return new NextResponse("User not found", { status: 404 });
         }

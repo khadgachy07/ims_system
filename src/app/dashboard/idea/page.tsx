@@ -94,6 +94,9 @@ export default function Ideas() {
       if (!response.ok) throw new Error("Failed to give incentive");
       const data = await response.text();
       setFeedback(data);
+      setTimeout( () => {
+        window.location.reload();
+      },1500)
     } catch (err) {
       console.error("Failed to give incentive.", err);
     }
@@ -130,12 +133,15 @@ export default function Ideas() {
         `${action.charAt(0).toUpperCase() + action.slice(1)} successful!`
       );
       setSelectedIdea(null);
-      window.location.reload();
+      setTimeout( () => {
+        window.location.reload();
+      },1500)
     } catch (err) {
       setFeedback(`Failed to ${action}. Please try again.`);
       console.error(err);
     }
   };
+
   const handleCreateIdea = async () => {
     const token = getAuthToken();
     if (!token) {
@@ -169,6 +175,9 @@ export default function Ideas() {
       setNewIdeaTitle("");
       setNewIdeaDescription("");
       setLoading(false);
+      setTimeout( () => {
+        window.location.reload();
+      },1500)
     } catch (err) {
       setFeedback("Failed to create idea. Please try again.");
       console.error(err);
@@ -195,7 +204,7 @@ export default function Ideas() {
 
   return (
     <div className="flex min-h-screen items-center justify-center px-6 py-12">
-      <div className="w-full max-w-3xl bg-teal-500 rounded-lg shadow-lg p-6 bg-opacity-25">
+      <div className="w-full max-w-3xl  bg-teal-500 rounded-lg shadow-lg p-6 bg-opacity-25">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-teal-500 text-center mb-6">
             Idea Dashboard
