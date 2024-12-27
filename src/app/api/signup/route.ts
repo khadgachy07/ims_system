@@ -2,7 +2,7 @@
 import { User } from "@/entity/users";
 import { NextRequest, NextResponse } from "next/server";
 import hashedPassword from "@/helpers/password";
-import { AppDataSource, checkDatabaseConnection, initializeDatabase } from "@/db/data-source";
+import { AppDataSource, initializeDatabase } from "@/db/data-source";
 
 export async function POST(req: NextRequest) {
   try {

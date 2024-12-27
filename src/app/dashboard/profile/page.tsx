@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Submission } from "@/entity/submissions";
 import { User } from "@/entity/users";
 import { Idea } from "@/entity/ideas";
 import { Role, Status } from "@/entity/enum"; // Assuming we have a status enum for the ideas
