@@ -8,6 +8,7 @@ import { Role, Status } from "@/entity/enum"; // Assuming we have a status enum 
 
 export default function Profile() {
   const [userRole, setUserRole] = useState<string | null>(null);
+  const [userDetails, setUserDetails] = useState<User | null>(null);
   const [submissions, setSubmissions] = useState<Idea[]>([]);
   const [approvedIdeas, setApprovedIdeas] = useState<Idea[]>([]);
   const [users, setUsers] = useState<User[]>([]);
@@ -53,6 +54,17 @@ export default function Profile() {
           throw new Error("Failed to fetch user profile");
         const user = await profileResponse.json();
         setUserRole(user.user.role);
+
+        const userDetailsResponse = await fetch(`/api/user/${user.user.userId}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (userDetailsResponse.ok){
+            setUserDetails(await userDetailsResponse.json());
+        }
 
         // Fetch data based on role
         if (user.user.role === "employee") {
@@ -156,6 +168,33 @@ export default function Profile() {
         {loading && <div className="text-teal-500">Loading...</div>}
         {error && <div className="text-red-500">{error}</div>}
         {feedback && <div className="text-yellow-500 mb-4">{feedback}</div>}
+
+        {/* User Details */}
+        {userDetails && (
+          <div className="bg-teal-900 rounded-lg p-4 mb-6">
+            <h2 className="text-2xl font-semibold text-teal-300 mb-4">
+              User Details
+            </h2>
+            <div className="space-y-2 text-teal-300">
+              <p>
+                <strong>Name:</strong> {userDetails.name}
+              </p>
+              <p>
+                <strong>Email:</strong> {userDetails.email}
+              </p>
+              <p>
+                <strong>Role:</strong> {userRole === Role.SYSTEM_ADMIN? "SYSTEM ADMIN": userRole === Role.INNOVATION_MANAGER? "INNOVATION MANAGER": "EMPLOYEE"}     
+              </p>
+              <p>
+                <strong>Points:</strong> {userDetails.points || "N/A"}
+              </p>
+              <p>
+                <strong>Joined At:</strong>{" "}
+                {new Date(userDetails.createdAt).toLocaleDateString()}
+              </p>
+            </div>
+          </div>
+        )}
 
         {userRole === "employee" && (
           <div>

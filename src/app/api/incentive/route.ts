@@ -34,6 +34,7 @@ export async function POST(req: NextRequest ) {
       return new NextResponse("User not found", { status: 404 });
     }
     recipient.points += 1000;
+    await userRepository.save(recipient);
 
     const incentiveRepository = AppDataSource.getRepository(Incentives);
     const incentive = new Incentives();
