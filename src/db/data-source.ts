@@ -8,7 +8,9 @@ import { seedAdmin } from "@/seed/seeder-admin";
 
 let appDataSource: DataSource;
 
-if (process.env.NEXT_PUBLIC_NODE_ENV === "production") {
+const isProduction = process.env.NEXT_PUBLIC_NODE_ENV === "production";
+
+if (isProduction) {
   appDataSource = new DataSource({
     type: "postgres",
     host: process.env.NEXT_PUBLIC_DB_HOST,
@@ -19,6 +21,7 @@ if (process.env.NEXT_PUBLIC_NODE_ENV === "production") {
     synchronize: false,
     logging: false,
     entities: [User, Incentives, Idea, Submission],
+    ssl: true, // Enable SSL in production
   });
 } else {
   appDataSource = new DataSource({
@@ -33,7 +36,7 @@ if (process.env.NEXT_PUBLIC_NODE_ENV === "production") {
     entities: [User, Incentives, Idea, Submission],
     migrations: [join(__dirname, '../migrations/', '*.{ts,js}')],
     migrationsRun: true,
-    ssl: process.env.APP_ENV === 'production' ? true : false,
+    ssl: { rejectUnauthorized: false }
   });
 }
 
@@ -44,6 +47,7 @@ export async function initializeDatabase() {
   try {
     if (!appDataSource.isInitialized) {
       await appDataSource.initialize();
+      console.log("Database connected successfully!");
       await seedAdmin();
     }
   } catch (error) {
