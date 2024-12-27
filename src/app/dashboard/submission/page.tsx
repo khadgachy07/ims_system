@@ -5,7 +5,7 @@ import { Submission } from "@/entity/submission";
 
 export default function Submissions() {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
-  const [userRole, setUserRole] = useState<string | null>(null);
+//   const [userRole, setUserRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
@@ -42,8 +42,8 @@ export default function Submissions() {
           },
         });
         if (!roleResponse.ok) throw new Error("Failed to fetch user role");
-        const user = await roleResponse.json();
-        setUserRole(user.user.role);
+        // const user = await roleResponse.json();
+        // setUserRole(user.user.role);
 
         // Fetch submissions
         const submissionsResponse = await fetch("/api/submission", {
