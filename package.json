@@ -7,9 +7,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "seed": "node -r ts-node/register/transpile-only -r tsconfig-paths/register src/seed/seed.ts"
-  },
+    "lint": "next lint"
+    },
   "dependencies": {
     "bcrypt": "^5.1.1",
     "dotenv": "^16.4.7",
