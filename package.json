@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
-    },
+  },
   "dependencies": {
     "bcrypt": "^5.1.1",
     "dotenv": "^16.4.7",
@@ -21,8 +21,7 @@
     "react-dom": "^19.0.0",
     "reflect-metadata": "^0.2.2",
     "tsx": "^4.19.2",
-    "typeorm": "^0.3.20",
-    "typeorm-seeding": "^1.6.1"
+    "typeorm": "^0.3.20"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
